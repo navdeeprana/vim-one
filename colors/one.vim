@@ -413,15 +413,15 @@ if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
   " }}}
 
   " Diff highlighting -------------------------------------------------------{{{
-  call <sid>X('DiffAdd',     s:hue_4, s:pmenu, '')
-  call <sid>X('DiffChange',  s:hue_6, s:pmenu, '')
-  call <sid>X('DiffDelete',  s:hue_5, s:pmenu, '')
-  call <sid>X('DiffText',    s:hue_2, s:pmenu, '')
-  call <sid>X('DiffAdded',   s:hue_4, s:pmenu, '')
-  call <sid>X('DiffFile',    s:hue_5, s:pmenu, '')
-  call <sid>X('DiffNewFile', s:hue_4, s:pmenu, '')
-  call <sid>X('DiffLine',    s:hue_2, s:pmenu, '')
-  call <sid>X('DiffRemoved', s:hue_5, s:pmenu, '')
+  call <sid>X('DiffAdd',     s:hue_4, s:vertsplit, '')
+  call <sid>X('DiffChange',  s:hue_6, s:vertsplit, '')
+  call <sid>X('DiffDelete',  s:hue_5, s:vertsplit, '')
+  call <sid>X('DiffText',    s:hue_2, s:vertsplit, '')
+  call <sid>X('DiffAdded',   s:hue_4, s:vertsplit, '')
+  call <sid>X('DiffFile',    s:hue_5, s:vertsplit, '')
+  call <sid>X('DiffNewFile', s:hue_4, s:vertsplit, '')
+  call <sid>X('DiffLine',    s:hue_2, s:vertsplit, '')
+  call <sid>X('DiffRemoved', s:hue_5, s:vertsplit, '')
   " }}}
 
   " C/C++ highlighting ------------------------------------------------------{{{
