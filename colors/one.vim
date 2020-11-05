@@ -306,8 +306,8 @@ if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
   let s:purple  = ['#a626a4', '127']
   let s:green   = ['#50a14f', '71']
 
-  let s:red_2   = ['#e45649', '166']
   let s:red_1   = ['#ca1243', '160']
+  let s:red_2   = ['#e45649', '166']
 
   let s:brown_1 = ['#986801', '94']
   let s:brown_2 = ['#c18401', '136']
@@ -328,8 +328,9 @@ if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
   call <sid>X('ErrorMsg',     s:red_2,     s:gray_8,  'none')
   call <sid>X('VertSplit',    s:gray_7,    '',        'none')
   call <sid>X('Folded',       s:syntax_fg, s:gray_6,  'none')
-  call <sid>X('FoldColumn',   s:gray_4,    s:gray_8,  '')
-  call <sid>X('IncSearch',    s:brown_1,   '',        '')
+  call <sid>X('FoldColumn',   s:gray_3,    s:gray_8,  '')
+  call <sid>X('IncSearch',    s:green,   '',        '')
+  call <sid>X('Substitute',   s:green,   '',        '')
   call <sid>X('LineNr',       s:gray_5,    '',        '')
   call <sid>X('CursorLineNr', s:syntax_fg, s:gray_8,  'none')
   call <sid>X('MatchParen',   s:red_2,     s:gray_8,  'underline,bold')
@@ -356,7 +357,7 @@ if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
   call <sid>X('WarningMsg',   s:red_2,     '',        '')
   call <sid>X('TooLong',      s:red_2,     '',        '')
   call <sid>X('WildMenu',     s:syntax_fg, s:gray_4,  '')
-  call <sid>X('SignColumn',   '',          s:gray_6,  '')
+  call <sid>X('SignColumn',   '',          s:gray_8,  '')
   call <sid>X('Special',      s:blue_1,    '',        '')
   " }}}
 
