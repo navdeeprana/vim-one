@@ -365,7 +365,7 @@ if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
     "Spell stuff
     call <sid>X('StatusLine',       s:syntax_fg, s:gray_6,    'none')
     call <sid>X('StatusLineNC',     s:syntax_fg, s:gray_5,    '')
-    call <sid>X('Substitute',       s:blue_1, s:syntax_bg,   '')
+    call <sid>X('Substitute',       s:syntax_bg, s:brown_2,   '')
     call <sid>X('TabLine',          s:gray_2,    s:gray_6,    'none')
     call <sid>X('TabLineFill',      s:gray_4,    s:gray_6,    'none')
     call <sid>X('TabLineSel',       s:syntax_bg, s:blue_1,    '')
