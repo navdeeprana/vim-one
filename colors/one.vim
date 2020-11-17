@@ -1,22 +1,5 @@
-" Name:    one vim colorscheme
-" Author:  Ramzi Akremi
-" License: MIT
-" Version: 1.1.1-pre
-
-" {{{  Global setup
-
-if exists("*<SID>X")
-    delf <SID>X
-    delf <SID>XAPI
-    delf <SID>rgb
-    delf <SID>color
-    delf <SID>rgb_color
-    delf <SID>rgb_level
-    delf <SID>rgb_number
-    delf <SID>grey_color
-    delf <SID>grey_level
-    delf <SID>grey_number
-endif
+" Lightweight one.vim
+" Modified from rakr/one.vim
 
 highlight clear
 syntax reset
@@ -26,557 +9,291 @@ if exists('g:colors_name')
 endif
 let g:colors_name = 'one'
 
-if !exists('g:one_allow_italics')
-    let g:one_allow_italics = 0
-endif
-
-let s:italic = ''
-if g:one_allow_italics == 1
-    let s:italic = 'italic'
-endif
-
-if has('gui_running') || has('termguicolors') || &t_Co == 88 || &t_Co == 256
-    " functions
-    " returns an approximate grey index for the given grey level
-
-    " {{{  Utility functions
-    fun <SID>grey_number(x)
-        if &t_Co == 88
-            if a:x < 23
-                return 0
-            elseif a:x < 69
-                return 1
-            elseif a:x < 103
-                return 2
-            elseif a:x < 127
-                return 3
-            elseif a:x < 150
-                return 4
-            elseif a:x < 173
-                return 5
-            elseif a:x < 196
-                return 6
-            elseif a:x < 219
-                return 7
-            elseif a:x < 243
-                return 8
-            else
-                return 9
-            endif
-        else
-            if a:x < 14
-                return 0
-            else
-                let l:n = (a:x - 8) / 10
-                let l:m = (a:x - 8) % 10
-                if l:m < 5
-                    return l:n
-                else
-                    return l:n + 1
-                endif
-            endif
-        endif
-    endfun
-
-    " returns the actual grey level represented by the grey index
-    fun <SID>grey_level(n)
-        if &t_Co == 88
-            if a:n == 0
-                return 0
-            elseif a:n == 1
-                return 46
-            elseif a:n == 2
-                return 92
-            elseif a:n == 3
-                return 115
-            elseif a:n == 4
-                return 139
-            elseif a:n == 5
-                return 162
-            elseif a:n == 6
-                return 185
-            elseif a:n == 7
-                return 208
-            elseif a:n == 8
-                return 231
-            else
-                return 255
-            endif
-        else
-            if a:n == 0
-                return 0
-            else
-                return 8 + (a:n * 10)
-            endif
-        endif
-    endfun
-
-    " returns the palette index for the given grey index
-    fun <SID>grey_color(n)
-        if &t_Co == 88
-            if a:n == 0
-                return 16
-            elseif a:n == 9
-                return 79
-            else
-                return 79 + a:n
-            endif
-        else
-            if a:n == 0
-                return 16
-            elseif a:n == 25
-                return 231
-            else
-                return 231 + a:n
-            endif
-        endif
-    endfun
-
-    " returns an approximate color index for the given color level
-    fun <SID>rgb_number(x)
-        if &t_Co == 88
-            if a:x < 69
-                return 0
-            elseif a:x < 172
-                return 1
-            elseif a:x < 230
-                return 2
-            else
-                return 3
-            endif
-        else
-            if a:x < 75
-                return 0
-            else
-                let l:n = (a:x - 55) / 40
-                let l:m = (a:x - 55) % 40
-                if l:m < 20
-                    return l:n
-                else
-                    return l:n + 1
-                endif
-            endif
-        endif
-    endfun
-
-    " returns the actual color level for the given color index
-    fun <SID>rgb_level(n)
-        if &t_Co == 88
-            if a:n == 0
-                return 0
-            elseif a:n == 1
-                return 139
-            elseif a:n == 2
-                return 205
-            else
-                return 255
-            endif
-        else
-            if a:n == 0
-                return 0
-            else
-                return 55 + (a:n * 40)
-            endif
-        endif
-    endfun
-
-    " returns the palette index for the given R/G/B color indices
-    fun <SID>rgb_color(x, y, z)
-        if &t_Co == 88
-            return 16 + (a:x * 16) + (a:y * 4) + a:z
-        else
-            return 16 + (a:x * 36) + (a:y * 6) + a:z
-        endif
-    endfun
-
-    " returns the palette index to approximate the given R/G/B color levels
-    fun <SID>color(r, g, b)
-        " get the closest grey
-        let l:gx = <SID>grey_number(a:r)
-        let l:gy = <SID>grey_number(a:g)
-        let l:gz = <SID>grey_number(a:b)
-
-        " get the closest color
-        let l:x = <SID>rgb_number(a:r)
-        let l:y = <SID>rgb_number(a:g)
-        let l:z = <SID>rgb_number(a:b)
-
-        if l:gx == l:gy && l:gy == l:gz
-            " there are two possibilities
-            let l:dgr = <SID>grey_level(l:gx) - a:r
-            let l:dgg = <SID>grey_level(l:gy) - a:g
-            let l:dgb = <SID>grey_level(l:gz) - a:b
-            let l:dgrey = (l:dgr * l:dgr) + (l:dgg * l:dgg) + (l:dgb * l:dgb)
-            let l:dr = <SID>rgb_level(l:gx) - a:r
-            let l:dg = <SID>rgb_level(l:gy) - a:g
-            let l:db = <SID>rgb_level(l:gz) - a:b
-            let l:drgb = (l:dr * l:dr) + (l:dg * l:dg) + (l:db * l:db)
-            if l:dgrey < l:drgb
-                " use the grey
-                return <SID>grey_color(l:gx)
-            else
-                " use the color
-                return <SID>rgb_color(l:x, l:y, l:z)
-            endif
-        else
-            " only one possibility
-            return <SID>rgb_color(l:x, l:y, l:z)
-        endif
-    endfun
-
-    " returns the palette index to approximate the 'rrggbb' hex string
-    fun <SID>rgb(rgb)
-        let l:r = ('0x' . strpart(a:rgb, 0, 2)) + 0
-        let l:g = ('0x' . strpart(a:rgb, 2, 2)) + 0
-        let l:b = ('0x' . strpart(a:rgb, 4, 2)) + 0
-
-        return <SID>color(l:r, l:g, l:b)
-    endfun
-
-    " sets the highlighting for the given group
-    fun <SID>XAPI(group, fg, bg, attr)
-        let l:attr = a:attr
-        if g:one_allow_italics == 0 && l:attr ==? 'italic'
-            let l:attr= 'none'
-        endif
-
-        let l:bg = ""
-        let l:fg = ""
-        let l:decoration = ""
-
-        if a:bg != ''
-            let l:bg = " guibg=#" . a:bg . " ctermbg=" . <SID>rgb(a:bg)
-        endif
-
-        if a:fg != ''
-            let l:fg = " guifg=#" . a:fg . " ctermfg=" . <SID>rgb(a:fg)
-        endif
-
-        if a:attr != ''
-            let l:decoration = " gui=" . l:attr . " cterm=" . l:attr
-        endif
-
-        let l:exec = l:fg . l:bg . l:decoration
-
-        if l:exec != ''
-            exec "hi " . a:group . l:exec
-        endif
-
-    endfun
-
-    " Highlight function
-    " the original one is borrowed from mhartington/oceanic-next
-    function! <SID>X(group, fg, bg, attr, ...)
-        let l:attrsp = get(a:, 1, "")
-        " fg, bg, attr, attrsp
-        if !empty(a:fg)
-            exec "hi " . a:group . " guifg=" .  a:fg[0]
-            exec "hi " . a:group . " ctermfg=" . a:fg[1]
-        endif
-        if !empty(a:bg)
-            exec "hi " . a:group . " guibg=" .  a:bg[0]
-            exec "hi " . a:group . " ctermbg=" . a:bg[1]
-        endif
-        if a:attr != ""
-            exec "hi " . a:group . " gui=" .   a:attr
-            exec "hi " . a:group . " cterm=" . a:attr
-        endif
-        if !empty(l:attrsp)
-            exec "hi " . a:group . " guisp=" . l:attrsp[0]
-        endif
-    endfunction
-
-    " }}}
-
-    " {{{  Color definition
-    let s:gray_1  = ['#494b53', '23']
-    let s:gray_2  = ['#696c77', '60']
-    let s:gray_3  = ['#9e9e9e', '247']
-    let s:gray_4  = ['#a0a1a7', '145']
-    let s:gray_5  = ['#c2c2c3', '250']
-    let s:gray_6  = ['#d0d0d0', '251']
-    let s:gray_7  = ['#e8e8e8', '188']
-    let s:gray_8  = ['#f0f0f0', '254']
-
-    let s:cyan_1  = ['#0184bc', '31']
-    let s:cyan_2  = ['#3a8b84', '73']
-
-    let s:blue_1  = ['#4078f2', '33']
-    let s:blue_2  = ['#526fff', '63']
-    let s:blue_3  = ['#5079be', '68']
-
-    let s:purple_1 = ['#a626a4', '127']
-    let s:purple_2 = ['#bf75d6', '134']
-
-    let s:green_1  = ['#50a14f', '71']
-    let s:green_2  = ['#76af6f', '107']
-
-    let s:red_1    = ['#ca1243', '160']
-    let s:red_2    = ['#e45649', '166']
-
-    let s:brown_1  = ['#986801', '94']
-    let s:brown_2  = ['#c18401', '136']
-
-    let s:syntax_fg = s:gray_1
-    let s:syntax_bg = s:gray_8
-    " }}}
-
-    " {{{  Vim editor color
-    call <sid>X('Normal',           s:syntax_fg, s:syntax_bg, '')
-    call <sid>X('ColorColumn',      '',          s:syntax_bg, '')
-    call <sid>X('Conceal',          s:gray_2,    s:syntax_bg, 'bold')
-    call <sid>X('Cursor',           '',          s:blue_2,    '')
-    call <sid>X('CursorColumn',     '',          s:syntax_bg, '')
-    call <sid>X('CursorIM',         '',          '',          '')
-    call <sid>X('CursorLine',       '',          s:syntax_bg, 'none')
-    call <sid>X('CursorLineNr',     s:syntax_fg, s:syntax_bg, 'none')
-    "Debug
-    call <sid>X('DiffAdd',          s:gray_7,    s:green_2,   '')
-    call <sid>X('DiffChange',       s:gray_7,    s:brown_2,       '')
-    call <sid>X('DiffDelete',       s:red_2,     s:gray_7,    '')
-    call <sid>X('DiffText',         s:blue_1,    s:gray_7,    '')
-    call <sid>X('DiffAdded',        s:gray_7,    s:green_1,    '')
-    call <sid>X('DiffFile',         s:red_2,     s:gray_7,    '')
-    call <sid>X('DiffNewFile',      s:green_1,   s:gray_7,    '')
-    call <sid>X('DiffLine',         s:blue_1,    s:gray_7,    '')
-    call <sid>X('DiffRemoved',      s:red_2,     s:gray_7,    '')
-    call <sid>X('Directory',        s:blue_1,    '',          '')
-    "EndOfBuffer
-    call <sid>X('ErrorMsg',         s:red_2,     s:syntax_bg, 'none')
-    call <sid>X('FoldColumn',       s:gray_3,    s:syntax_bg, '')
-    call <sid>X('Folded',           s:syntax_fg, s:gray_6,    'none')
-    call <sid>X('IncSearch',        s:green_1, s:syntax_bg,   '')
-    call <sid>X('LineNr',           s:gray_5,    '',          '')
-    call <sid>X('MatchParen',       s:red_2,     s:syntax_bg, 'underline,bold')
-    call <sid>X('ModeMsg',          s:syntax_fg, '',          '')
-    call <sid>X('MoreMsg',          s:syntax_fg, '',          '')
-    call <sid>X('NonText',          s:gray_4,    '',          'none')
-    call <sid>X('PMenu',            '',          s:gray_7,    '')
-    call <sid>X('PMenuSel',         '',          s:gray_5,    '')
-    call <sid>X('PMenuSbar',        '',          s:syntax_bg, '')
-    call <sid>X('PMenuThumb',       '',          s:gray_1,    '')
-    call <sid>X('Question',         s:blue_1,    '',          '')
-    "QuickFixLine
-    "ScrollBar
-    call <sid>X('Search',           s:syntax_bg, s:brown_2,   '')
-    call <sid>X('SignColumn',       '',          s:syntax_bg, '')
-    call <sid>X('Special',          s:blue_1,    '',          '')
-    call <sid>X('SpecialKey',       s:gray_6,    '',          'none')
-    "Spell stuff
-    call <sid>X('StatusLine',       s:syntax_fg, s:gray_6,    'none')
-    call <sid>X('StatusLineNC',     s:syntax_fg, s:gray_5,    '')
-    call <sid>X('Substitute',       s:syntax_bg, s:brown_2,   '')
-    call <sid>X('TabLine',          s:gray_2,    s:gray_6,    'none')
-    call <sid>X('TabLineFill',      s:gray_4,    s:gray_6,    'none')
-    call <sid>X('TabLineSel',       s:syntax_bg, s:blue_1,    '')
-    "TermCursor
-    "TermCursorNC
-    call <sid>X('Title',            s:syntax_fg, '',          'bold')
-    call <sid>X('TooLong',          s:red_2,     '',          '')
-    call <sid>X('VertSplit',        s:gray_7,    '',          'none')
-    call <sid>X('Visual',           '',          s:gray_6,    '')
-    call <sid>X('VisualNOS',        '',          s:gray_6,    '')
-    call <sid>X('WarningMsg',       s:red_2,     '',          '')
-    call <sid>X('Whitespace',       s:gray_6,    '',          'none')
-    call <sid>X('WildMenu',         s:blue_1,    s:syntax_fg, '')
-    " }}}
-
-    " {{{  Vim Help highlighting
-    call <sid>X('helpCommand',      s:brown_2,   '',          '')
-    call <sid>X('helpExample',      s:brown_2,   '',          '')
-    call <sid>X('helpHeader',       s:gray_1,    '',          'bold')
-    call <sid>X('helpSectionDelim', s:gray_4,    '',          '')
-    " }}}
-
-    " {{{  Standard syntax highlighting
-    call <sid>X('Comment',          s:gray_4,    '',          s:italic)
-    call <sid>X('Constant',         s:green_1,   '',          '')
-    call <sid>X('String',           s:green_1,   '',          '')
-    call <sid>X('Character',        s:green_1,   '',          '')
-    call <sid>X('Number',           s:brown_1,   '',          '')
-    call <sid>X('Boolean',          s:brown_1,   '',          '')
-    call <sid>X('Float',            s:brown_1,   '',          '')
-    call <sid>X('Identifier',       s:red_2,     '',          'none')
-    call <sid>X('Function',         s:blue_1,    '',          '')
-    call <sid>X('Statement',        s:purple_1,  '',          'none')
-    call <sid>X('Conditional',      s:purple_1,  '',          '')
-    call <sid>X('Repeat',           s:purple_1,  '',          '')
-    call <sid>X('Label',            s:purple_1,  '',          '')
-    call <sid>X('Operator',         s:blue_2,    '',          'none')
-    call <sid>X('Keyword',          s:red_2,     '',          '')
-    call <sid>X('Exception',        s:purple_1,  '',          '')
-    call <sid>X('PreProc',          s:brown_2,   '',          '')
-    call <sid>X('Include',          s:blue_1,    '',          '')
-    call <sid>X('Define',           s:purple_1,  '',          'none')
-    call <sid>X('Macro',            s:purple_1,  '',          '')
-    call <sid>X('PreCondit',        s:brown_2,   '',          '')
-    call <sid>X('Type',             s:brown_2,   '',          'none')
-    call <sid>X('StorageClass',     s:brown_2,   '',          '')
-    call <sid>X('Structure',        s:brown_2,   '',          '')
-    call <sid>X('Typedef',          s:brown_2,   '',          '')
-    call <sid>X('Special',          s:blue_1,    '',          '')
-    call <sid>X('SpecialChar',      '',          '',          '')
-    call <sid>X('Tag',              '',          '',          '')
-    call <sid>X('Delimiter',        '',          '',          '')
-    call <sid>X('SpecialComment',   '',          '',          '')
-    call <sid>X('Debug',            '',          '',          '')
-    call <sid>X('Underlined',       '',          '',          'underline')
-    call <sid>X('Ignore',           '',          '',          '')
-    call <sid>X('Error',            s:red_2,     s:syntax_bg, 'bold')
-    call <sid>X('Todo',             s:purple_1,  s:syntax_bg, '')
-    " }}}
-
-    " {{{ GitGutter highlighting
-    call <sid>X('GitGutterAdd',    s:green_1,   s:gray_7, 'bold')
-    call <sid>X('GitGutterChange', s:brown_2, s:gray_7, 'bold')
-    call <sid>X('GitGutterDelete', s:red_1,   s:gray_7, 'bold')
-    " }}}
-
-    " {{{ C/C++ highlighting
-    call <sid>X('cInclude',          s:purple_1,  '', '')
-    call <sid>X('cPreCondit',        s:purple_1,  '', '')
-    call <sid>X('cPreConditMatch',   s:purple_1,  '', '')
-    call <sid>X('cType',             s:purple_1,  '', '')
-    call <sid>X('cStorageClass',     s:purple_1,  '', '')
-    call <sid>X('cStructure',        s:purple_1,  '', '')
-    call <sid>X('cOperator',         s:purple_1,  '', '')
-    call <sid>X('cStatement',        s:purple_1,  '', '')
-    call <sid>X('cTODO',             s:purple_1,  '', '')
-    call <sid>X('cConstant',         s:brown_1, '', '')
-    call <sid>X('cSpecial',          s:cyan_1,  '', '')
-    call <sid>X('cSpecialCharacter', s:cyan_1,  '', '')
-    call <sid>X('cString',           s:green_1,   '', '')
-    call <sid>X('cppType',           s:purple_1,  '', '')
-    call <sid>X('cppStorageClass',   s:purple_1,  '', '')
-    call <sid>X('cppStructure',      s:purple_1,  '', '')
-    call <sid>X('cppModifier',       s:purple_1,  '', '')
-    call <sid>X('cppOperator',       s:purple_1,  '', '')
-    call <sid>X('cppAccess',         s:purple_1,  '', '')
-    call <sid>X('cppStatement',      s:purple_1,  '', '')
-    call <sid>X('cppConstant',       s:red_2,   '', '')
-    call <sid>X('cCppString',        s:green_1,   '', '')
-    " }}}
-
-    " {{{ JSON highlighting
-    call <sid>X('jsonCommentError',       s:gray_1,  '', ''        )
-    call <sid>X('jsonKeyword',            s:red_2,   '', ''        )
-    call <sid>X('jsonQuote',              s:gray_4,  '', ''        )
-    call <sid>X('jsonTrailingCommaError', s:red_2,   '', 'reverse' )
-    call <sid>X('jsonMissingCommaError',  s:red_2,   '', 'reverse' )
-    call <sid>X('jsonNoQuotesError',      s:red_2,   '', 'reverse' )
-    call <sid>X('jsonNumError',           s:red_2,   '', 'reverse' )
-    call <sid>X('jsonString',             s:green_1,   '', ''        )
-    call <sid>X('jsonBoolean',            s:purple_1,  '', ''        )
-    call <sid>X('jsonNumber',             s:brown_1, '', ''        )
-    call <sid>X('jsonStringSQError',      s:red_2,   '', 'reverse' )
-    call <sid>X('jsonSemicolonError',     s:red_2,   '', 'reverse' )
-    " }}}
-
-    " {{{  Markdown highlighting
-    call <sid>X('markdownUrl',              s:gray_4,  '', '')
-    call <sid>X('markdownBold',             s:brown_1, '', 'bold')
-    call <sid>X('markdownItalic',           s:brown_1, '', 'bold')
-    call <sid>X('markdownCode',             s:green_1,   '', '')
-    call <sid>X('markdownCodeBlock',        s:red_2,   '', '')
-    call <sid>X('markdownCodeDelimiter',    s:green_1,   '', '')
-    call <sid>X('markdownHeadingDelimiter', s:red_1,   '', '')
-    call <sid>X('markdownH1',               s:red_2,   '', '')
-    call <sid>X('markdownH2',               s:red_2,   '', '')
-    call <sid>X('markdownH3',               s:red_2,   '', '')
-    call <sid>X('markdownH3',               s:red_2,   '', '')
-    call <sid>X('markdownH4',               s:red_2,   '', '')
-    call <sid>X('markdownH5',               s:red_2,   '', '')
-    call <sid>X('markdownH6',               s:red_2,   '', '')
-    call <sid>X('markdownListMarker',       s:red_2,   '', '')
-    " }}}
-
-    " {{{  Python highlighting
-    call <sid>X('pythonImport',          s:purple_1,  '', '')
-    call <sid>X('pythonBuiltin',         s:cyan_1,  '', '')
-    call <sid>X('pythonStatement',       s:purple_1,  '', '')
-    call <sid>X('pythonParam',           s:brown_1, '', '')
-    call <sid>X('pythonEscape',          s:red_2,   '', '')
-    call <sid>X('pythonSelf',            s:gray_2,  '', s:italic)
-    call <sid>X('pythonClass',           s:blue_1,  '', '')
-    call <sid>X('pythonOperator',        s:purple_1,  '', '')
-    call <sid>X('pythonEscape',          s:red_2,   '', '')
-    call <sid>X('pythonFunction',        s:blue_1,  '', '')
-    call <sid>X('pythonKeyword',         s:blue_1,  '', '')
-    call <sid>X('pythonModule',          s:purple_1,  '', '')
-    call <sid>X('pythonStringDelimiter', s:green_1,   '', '')
-    call <sid>X('pythonSymbol',          s:cyan_1,  '', '')
-    " }}}
-
-    " {{{  Spelling highlighting
-    call <sid>X('SpellBad',   s:syntax_bg, s:red_2, '')
-    call <sid>X('SpellLocal', s:syntax_bg, s:red_1, '')
-    call <sid>X('SpellCap',   s:syntax_bg, s:red_2, '')
-    call <sid>X('SpellRare',  s:syntax_bg, s:red_2, '')
-    " }}}
-
-    " {{{  Vim highlighting
-    call <sid>X('vimCommand',      s:purple_1, '', '')
-    call <sid>X('vimCommentTitle', s:gray_4, '', 'bold')
-    call <sid>X('vimFunction',     s:cyan_1, '', '')
-    call <sid>X('vimFuncName',     s:purple_1, '', '')
-    call <sid>X('vimHighlight',    s:blue_1, '', '')
-    call <sid>X('vimLineComment',  s:gray_4, '', s:italic)
-    call <sid>X('vimParenSep',     s:gray_2, '', '')
-    call <sid>X('vimSep',          s:gray_2, '', '')
-    call <sid>X('vimUserFunc',     s:cyan_1, '', '')
-    call <sid>X('vimVar',          s:red_2,  '', '')
-    " }}}
-
-    " {{{  XML highlighting
-    call <sid>X('xmlAttrib',  s:brown_2, '', '')
-    call <sid>X('xmlEndTag',  s:red_2,   '', '')
-    call <sid>X('xmlTag',     s:red_2,   '', '')
-    call <sid>X('xmlTagName', s:red_2,   '', '')
-    " }}}
-
-    " {{{  man highlighting
-    hi link manTitle String
-    call <sid>X('manFooter', s:gray_4, '', '')
-    " }}}
-
-    " {{{  Neovim Terminal Colors
-    if has('nvim')
-        let g:terminal_color_0  = "#353a44"
-        let g:terminal_color_8  = "#353a44"
-        let g:terminal_color_1  = "#e88388"
-        let g:terminal_color_9  = "#e88388"
-        let g:terminal_color_2  = "#a7cc8c"
-        let g:terminal_color_10 = "#a7cc8c"
-        let g:terminal_color_3  = "#ebca8d"
-        let g:terminal_color_11 = "#ebca8d"
-        let g:terminal_color_4  = "#72bef2"
-        let g:terminal_color_12 = "#72bef2"
-        let g:terminal_color_5  = "#d291e4"
-        let g:terminal_color_13 = "#d291e4"
-        let g:terminal_color_6  = "#65c2cd"
-        let g:terminal_color_14 = "#65c2cd"
-        let g:terminal_color_7  = "#e3e5e9"
-        let g:terminal_color_15 = "#e3e5e9"
+" Highlight function
+function! <SID>hi(group, fg, bg, attr, ...)
+    let l:attrsp = get(a:, 1, "")
+    if !empty(a:fg)
+        exec "hi " . a:group . " guifg=" .  a:fg
     endif
+    if !empty(a:bg)
+        exec "hi " . a:group . " guibg=" .  a:bg
+    endif
+    if a:attr != ""
+        exec "hi " . a:group . " gui=" .   a:attr
+    endif
+    if !empty(l:attrsp)
+        exec "hi " . a:group . " guisp=" . l:attrsp
+    endif
+endfunction
 
-    " {{{  Delete functions
-    " delf <SID>X
-    " delf <SID>XAPI
-    " delf <SID>rgb
-    " delf <SID>color
-    " delf <SID>rgb_color
-    " delf <SID>rgb_level
-    " delf <SID>rgb_number
-    " delf <SID>grey_color
-    " delf <SID>grey_level
-    " delf <SID>grey_number
-    " }}}
+" {{{  Color definition
+let s:gray_1    = '#494b53'
+let s:gray_2    = '#696c77'
+let s:gray_3    = '#9e9e9e'
+let s:gray_4    = '#a0a1a7'
+let s:gray_5    = '#c2c2c3'
+let s:gray_6    = '#d0d0d0'
+let s:gray_7    = '#e8e8e8'
+let s:gray_8    = '#f0f0f0'
 
-endif
+let s:cyan_1    = '#0184bc'
+let s:cyan_2    = '#3a8b84'
+
+let s:blue_1    = '#4078f2'
+let s:blue_2    = '#526fff'
+let s:blue_3    = '#5079be'
+
+let s:purple_1  = '#a626a4'
+let s:purple_2  = '#bf75d6'
+
+let s:green_1   = '#50a14f'
+let s:green_2   = '#76af6f'
+
+let s:red_1     = '#ca1243'
+let s:red_2     = '#e45649'
+
+let s:brown_1   = '#986801'
+let s:brown_2   = '#c18401'
+
+let s:syntax_fg = s:gray_1
+let s:syntax_bg = s:gray_8
 " }}}
 
-" {{{  Public API
-function! one#highlight(group, fg, bg, attr)
-    call <sid>XAPI(a:group, a:fg, a:bg, a:attr)
-endfunction
+" {{{  Vim editor color
+call <sid>hi('Normal',       s:syntax_fg, s:syntax_bg, '')
+call <sid>hi('ColorColumn',  '',          s:syntax_bg, '')
+call <sid>hi('Conceal',      s:gray_2,    s:syntax_bg, 'bold')
+call <sid>hi('Cursor',       '',          s:blue_2,    '')
+call <sid>hi('CursorColumn', '',          s:syntax_bg, '')
+call <sid>hi('CursorIM',     '',          '',          '')
+call <sid>hi('CursorLine',   '',          s:syntax_bg, 'none')
+call <sid>hi('CursorLineNr', s:syntax_fg, s:syntax_bg, 'none')
+"Debug
+call <sid>hi('DiffAdd',      s:gray_7,    s:green_2,   '')
+call <sid>hi('DiffChange',   s:gray_7,    s:brown_2,   '')
+call <sid>hi('DiffDelete',   s:red_2,     s:gray_7,    '')
+call <sid>hi('DiffText',     s:blue_1,    s:gray_7,    '')
+call <sid>hi('DiffAdded',    s:gray_7,    s:green_1,   '')
+call <sid>hi('DiffFile',     s:red_2,     s:gray_7,    '')
+call <sid>hi('DiffNewFile',  s:green_1,   s:gray_7,    '')
+call <sid>hi('DiffLine',     s:blue_1,    s:gray_7,    '')
+call <sid>hi('DiffRemoved',  s:red_2,     s:gray_7,    '')
+call <sid>hi('Directory',    s:blue_1,    '',          '')
+"EndOfBuffer
+call <sid>hi('ErrorMsg',     s:red_2,     s:syntax_bg, 'none')
+call <sid>hi('FoldColumn',   s:gray_3,    s:syntax_bg, '')
+call <sid>hi('Folded',       s:syntax_fg, s:gray_6,    'none')
+call <sid>hi('IncSearch',    s:green_1,   s:syntax_bg, '')
+call <sid>hi('LineNr',       s:gray_5,    '',          '')
+call <sid>hi('MatchParen',   s:red_2,     s:syntax_bg, 'underline,bold')
+call <sid>hi('ModeMsg',      s:syntax_fg, '',          '')
+call <sid>hi('MoreMsg',      s:syntax_fg, '',          '')
+call <sid>hi('NonText',      s:gray_4,    '',          'none')
+call <sid>hi('PMenu',        '',          s:gray_7,    '')
+call <sid>hi('PMenuSel',     '',          s:gray_5,    '')
+call <sid>hi('PMenuSbar',    '',          s:syntax_bg, '')
+call <sid>hi('PMenuThumb',   '',          s:gray_1,    '')
+call <sid>hi('Question',     s:blue_1,    '',          '')
+"QuickFixLine
+"ScrollBar
+call <sid>hi('Search',       s:syntax_bg, s:brown_2,   '')
+call <sid>hi('SignColumn',   '',          s:syntax_bg, '')
+call <sid>hi('Special',      s:blue_1,    '',          '')
+call <sid>hi('SpecialKey',   s:gray_6,    '',          'none')
+"Spell stuff
+call <sid>hi('StatusLine',   s:syntax_fg, s:gray_6,    'none')
+call <sid>hi('StatusLineNC', s:syntax_fg, s:gray_5,    '')
+call <sid>hi('Substitute',   s:syntax_bg, s:brown_2,   '')
+call <sid>hi('TabLine',      s:gray_2,    s:gray_6,    'none')
+call <sid>hi('TabLineFill',  s:gray_4,    s:gray_6,    'none')
+call <sid>hi('TabLineSel',   s:syntax_bg, s:blue_1,    '')
+"TermCursor
+"TermCursorNC
+call <sid>hi('Title',        s:syntax_fg, '',          'bold')
+call <sid>hi('TooLong',      s:red_2,     '',          '')
+call <sid>hi('VertSplit',    s:gray_7,    '',          'none')
+call <sid>hi('Visual',       '',          s:gray_6,    '')
+call <sid>hi('VisualNOS',    '',          s:gray_6,    '')
+call <sid>hi('WarningMsg',   s:red_2,     '',          '')
+call <sid>hi('Whitespace',   s:gray_6,    '',          'none')
+call <sid>hi('WildMenu',     s:blue_1,    s:syntax_fg, '')
+" }}}
+
+" {{{  Vim Help highlighting
+call <sid>hi('helpCommand',      s:brown_2, '', '')
+call <sid>hi('helpExample',      s:brown_2, '', '')
+call <sid>hi('helpHeader',       s:gray_1,  '', 'bold')
+call <sid>hi('helpSectionDelim', s:gray_4,  '', '')
+" }}}
+
+" {{{  Standard syntax highlighting
+call <sid>hi('Comment',        s:gray_4,   '',          '')
+call <sid>hi('Constant',       s:green_1,  '',          '')
+call <sid>hi('String',         s:green_1,  '',          '')
+call <sid>hi('Character',      s:green_1,  '',          '')
+call <sid>hi('Number',         s:brown_1,  '',          '')
+call <sid>hi('Boolean',        s:brown_1,  '',          '')
+call <sid>hi('Float',          s:brown_1,  '',          '')
+call <sid>hi('Identifier',     s:red_2,    '',          'none')
+call <sid>hi('Function',       s:blue_1,   '',          '')
+call <sid>hi('Statement',      s:purple_1, '',          'none')
+call <sid>hi('Conditional',    s:purple_1, '',          '')
+call <sid>hi('Repeat',         s:purple_1, '',          '')
+call <sid>hi('Label',          s:purple_1, '',          '')
+call <sid>hi('Operator',       s:blue_2,   '',          'none')
+call <sid>hi('Keyword',        s:red_2,    '',          '')
+call <sid>hi('Exception',      s:purple_1, '',          '')
+call <sid>hi('PreProc',        s:brown_2,  '',          '')
+call <sid>hi('Include',        s:blue_1,   '',          '')
+call <sid>hi('Define',         s:purple_1, '',          'none')
+call <sid>hi('Macro',          s:purple_1, '',          '')
+call <sid>hi('PreCondit',      s:brown_2,  '',          '')
+call <sid>hi('Type',           s:brown_2,  '',          'none')
+call <sid>hi('StorageClass',   s:brown_2,  '',          '')
+call <sid>hi('Structure',      s:brown_2,  '',          '')
+call <sid>hi('Typedef',        s:brown_2,  '',          '')
+call <sid>hi('Special',        s:blue_1,   '',          '')
+call <sid>hi('SpecialChar',    '',         '',          '')
+call <sid>hi('Tag',            '',         '',          '')
+call <sid>hi('Delimiter',      '',         '',          '')
+call <sid>hi('SpecialComment', '',         '',          '')
+call <sid>hi('Debug',          '',         '',          '')
+call <sid>hi('Underlined',     '',         '',          'underline')
+call <sid>hi('Ignore',         '',         '',          '')
+call <sid>hi('Error',          s:red_2,    s:syntax_bg, 'bold')
+call <sid>hi('Todo',           s:purple_1, s:syntax_bg, '')
+" }}}
+
+" {{{ GitGutter highlighting
+call <sid>hi('GitGutterAdd',    s:green_1, s:gray_7, 'bold')
+call <sid>hi('GitGutterChange', s:brown_2, s:gray_7, 'bold')
+call <sid>hi('GitGutterDelete', s:red_1,   s:gray_7, 'bold')
+" }}}
+
+" {{{ C/C++ highlighting
+call <sid>hi('cInclude',          s:purple_1, '', '')
+call <sid>hi('cPreCondit',        s:purple_1, '', '')
+call <sid>hi('cPreConditMatch',   s:purple_1, '', '')
+call <sid>hi('cType',             s:purple_1, '', '')
+call <sid>hi('cStorageClass',     s:purple_1, '', '')
+call <sid>hi('cStructure',        s:purple_1, '', '')
+call <sid>hi('cOperator',         s:purple_1, '', '')
+call <sid>hi('cStatement',        s:purple_1, '', '')
+call <sid>hi('cTODO',             s:purple_1, '', '')
+call <sid>hi('cConstant',         s:brown_1,  '', '')
+call <sid>hi('cSpecial',          s:cyan_1,   '', '')
+call <sid>hi('cSpecialCharacter', s:cyan_1,   '', '')
+call <sid>hi('cString',           s:green_1,  '', '')
+call <sid>hi('cppType',           s:purple_1, '', '')
+call <sid>hi('cppStorageClass',   s:purple_1, '', '')
+call <sid>hi('cppStructure',      s:purple_1, '', '')
+call <sid>hi('cppModifier',       s:purple_1, '', '')
+call <sid>hi('cppOperator',       s:purple_1, '', '')
+call <sid>hi('cppAccess',         s:purple_1, '', '')
+call <sid>hi('cppStatement',      s:purple_1, '', '')
+call <sid>hi('cppConstant',       s:red_2,    '', '')
+call <sid>hi('cCppString',        s:green_1,  '', '')
+" }}}
+
+" {{{ JSON highlighting
+call <sid>hi('jsonCommentError',       s:gray_1,   '', ''        )
+call <sid>hi('jsonKeyword',            s:red_2,    '', ''        )
+call <sid>hi('jsonQuote',              s:gray_4,   '', ''        )
+call <sid>hi('jsonTrailingCommaError', s:red_2,    '', 'reverse' )
+call <sid>hi('jsonMissingCommaError',  s:red_2,    '', 'reverse' )
+call <sid>hi('jsonNoQuotesError',      s:red_2,    '', 'reverse' )
+call <sid>hi('jsonNumError',           s:red_2,    '', 'reverse' )
+call <sid>hi('jsonString',             s:green_1,  '', ''        )
+call <sid>hi('jsonBoolean',            s:purple_1, '', ''        )
+call <sid>hi('jsonNumber',             s:brown_1,  '', ''        )
+call <sid>hi('jsonStringSQError',      s:red_2,    '', 'reverse' )
+call <sid>hi('jsonSemicolonError',     s:red_2,    '', 'reverse' )
+" }}}
+
+" {{{  Markdown highlighting
+call <sid>hi('markdownUrl',              s:gray_4,  '', '')
+call <sid>hi('markdownBold',             s:brown_1, '', 'bold')
+call <sid>hi('markdownItalic',           s:brown_1, '', 'bold')
+call <sid>hi('markdownCode',             s:green_1, '', '')
+call <sid>hi('markdownCodeBlock',        s:red_2,   '', '')
+call <sid>hi('markdownCodeDelimiter',    s:green_1, '', '')
+call <sid>hi('markdownHeadingDelimiter', s:red_1,   '', '')
+call <sid>hi('markdownH1',               s:red_2,   '', '')
+call <sid>hi('markdownH2',               s:red_2,   '', '')
+call <sid>hi('markdownH3',               s:red_2,   '', '')
+call <sid>hi('markdownH3',               s:red_2,   '', '')
+call <sid>hi('markdownH4',               s:red_2,   '', '')
+call <sid>hi('markdownH5',               s:red_2,   '', '')
+call <sid>hi('markdownH6',               s:red_2,   '', '')
+call <sid>hi('markdownListMarker',       s:red_2,   '', '')
+" }}}
+
+" {{{  Python highlighting
+call <sid>hi('pythonImport',          s:purple_1, '', '')
+call <sid>hi('pythonBuiltin',         s:cyan_1,   '', '')
+call <sid>hi('pythonStatement',       s:purple_1, '', '')
+call <sid>hi('pythonParam',           s:brown_1,  '', '')
+call <sid>hi('pythonEscape',          s:red_2,    '', '')
+call <sid>hi('pythonSelf',            s:gray_2,   '', '')
+call <sid>hi('pythonClass',           s:blue_1,   '', '')
+call <sid>hi('pythonOperator',        s:purple_1, '', '')
+call <sid>hi('pythonEscape',          s:red_2,    '', '')
+call <sid>hi('pythonFunction',        s:blue_1,   '', '')
+call <sid>hi('pythonKeyword',         s:blue_1,   '', '')
+call <sid>hi('pythonModule',          s:purple_1, '', '')
+call <sid>hi('pythonStringDelimiter', s:green_1,  '', '')
+call <sid>hi('pythonSymbol',          s:cyan_1,   '', '')
+" }}}
+
+" {{{  Spelling highlighting
+call <sid>hi('SpellBad',   s:syntax_bg, s:red_2, '')
+call <sid>hi('SpellLocal', s:syntax_bg, s:red_1, '')
+call <sid>hi('SpellCap',   s:syntax_bg, s:red_2, '')
+call <sid>hi('SpellRare',  s:syntax_bg, s:red_2, '')
+" }}}
+
+" {{{  Vim highlighting
+call <sid>hi('vimCommand',      s:purple_1, '', '')
+call <sid>hi('vimCommentTitle', s:gray_4,   '', 'bold')
+call <sid>hi('vimFunction',     s:cyan_1,   '', '')
+call <sid>hi('vimFuncName',     s:purple_1, '', '')
+call <sid>hi('vimHighlight',    s:blue_1,   '', '')
+call <sid>hi('vimLineComment',  s:gray_4,   '', '')
+call <sid>hi('vimParenSep',     s:gray_2,   '', '')
+call <sid>hi('vimSep',          s:gray_2,   '', '')
+call <sid>hi('vimUserFunc',     s:cyan_1,   '', '')
+call <sid>hi('vimVar',          s:red_2,    '', '')
+" }}}
+
+" {{{  XML highlighting
+call <sid>hi('xmlAttrib',  s:brown_2, '', '')
+call <sid>hi('xmlEndTag',  s:red_2,   '', '')
+call <sid>hi('xmlTag',     s:red_2,   '', '')
+call <sid>hi('xmlTagName', s:red_2,   '', '')
+" }}}
+
+" {{{  man highlighting
+hi link manTitle String
+call <sid>hi('manFooter', s:gray_4, '', '')
+" }}}
+
+" {{{  Neovim Terminal Colors
+if has('nvim')
+    let g:terminal_color_0  = "#353a44"
+    let g:terminal_color_8  = "#353a44"
+    let g:terminal_color_1  = "#e88388"
+    let g:terminal_color_9  = "#e88388"
+    let g:terminal_color_2  = "#a7cc8c"
+    let g:terminal_color_10 = "#a7cc8c"
+    let g:terminal_color_3  = "#ebca8d"
+    let g:terminal_color_11 = "#ebca8d"
+    let g:terminal_color_4  = "#72bef2"
+    let g:terminal_color_12 = "#72bef2"
+    let g:terminal_color_5  = "#d291e4"
+    let g:terminal_color_13 = "#d291e4"
+    let g:terminal_color_6  = "#65c2cd"
+    let g:terminal_color_14 = "#65c2cd"
+    let g:terminal_color_7  = "#e3e5e9"
+    let g:terminal_color_15 = "#e3e5e9"
+endif
 " }}}
