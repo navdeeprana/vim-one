@@ -27,7 +27,7 @@ function! <SID>hi(group, fg, bg, attr, ...)
 endfunction
 
 " {{{  Color definition
-let s:gray_1    = '#494b53'
+let s:gray_1    = '#4f4f4f'
 let s:gray_2    = '#696c77'
 let s:gray_3    = '#9e9e9e'
 let s:gray_4    = '#a0a1a7'
@@ -277,10 +277,14 @@ hi link manTitle String
 call <sid>hi('manFooter', s:gray_4, '', '')
 " }}}
 
+" {{{  Sneak highlighting
+call <sid>hi('Sneak', s:red_1, s:syntax_bg, 'underline,bold')
+" }}}
+
 " {{{  Neovim Terminal Colors
 if has('nvim')
-    let g:terminal_color_0  = "#353a44"
-    let g:terminal_color_8  = "#353a44"
+    let g:terminal_color_0  = "#4f4f4f"
+    let g:terminal_color_8  = "#4f4f4f"
     let g:terminal_color_1  = "#e88388"
     let g:terminal_color_9  = "#e88388"
     let g:terminal_color_2  = "#a7cc8c"
