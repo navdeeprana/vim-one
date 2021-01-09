@@ -33,7 +33,7 @@ let s:gray_3    = '#9e9e9e'
 let s:gray_4    = '#a0a1a7'
 let s:gray_5    = '#c2c2c3'
 let s:gray_6    = '#d0d0d0'
-let s:gray_7    = '#e8e8e8'
+let s:gray_7    = '#e0e0e0'
 let s:gray_8    = '#f0f0f0'
 
 let s:cyan_1    = '#0184bc'
@@ -69,16 +69,16 @@ call <sid>hi('CursorIM',     '',          '',          '')
 call <sid>hi('CursorLine',   '',          s:syntax_bg, 'none')
 call <sid>hi('CursorLineNr', s:syntax_fg, s:syntax_bg, 'none')
 "Debug
-call <sid>hi('DiffAdd',      s:gray_1,    s:green_2,   '')
-call <sid>hi('DiffChange',   s:gray_1,    s:brown_2,   '')
+call <sid>hi('DiffAdd',      s:green_2,   s:gray_7,    '')
+call <sid>hi('DiffChange',   s:brown_2,   s:gray_7,    '')
 call <sid>hi('DiffDelete',   s:red_2,     s:gray_7,    '')
 call <sid>hi('DiffText',     s:blue_1,    s:gray_7,    '')
-call <sid>hi('DiffAdded',    s:gray_7,    s:green_1,   '')
+call <sid>hi('DiffAdded',    s:green_2,   s:gray_7,   '')
 call <sid>hi('DiffFile',     s:red_2,     s:gray_7,    '')
 call <sid>hi('DiffNewFile',  s:green_1,   s:gray_7,    '')
 call <sid>hi('DiffLine',     s:blue_1,    s:gray_7,    '')
 call <sid>hi('DiffRemoved',  s:red_2,     s:gray_7,    '')
-call <sid>hi('Directory',    s:blue_1,    '',          '')
+call <sid>hi('Directory',    s:blue_1,    s:gray_7,    '')
 "EndOfBuffer
 call <sid>hi('ErrorMsg',     s:red_2,     s:syntax_bg, 'none')
 call <sid>hi('FoldColumn',   s:gray_3,    s:syntax_bg, '')
